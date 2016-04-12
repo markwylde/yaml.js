@@ -1,6 +1,6 @@
 {
   "name": "pumlhorse-yamljs",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Forked version of yamljs to add line numbers",
   "author": "Matt Dickinson <matt@mdickin.com>",
   "main": "./lib/Yaml.js",
