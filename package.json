@@ -1,6 +1,6 @@
 {
   "name": "pumlhorse-yamljs",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Forked version of yamljs to add line numbers",
   "author": "Matt Dickinson <matt@mdickin.com>",
   "main": "./lib/Yaml.js",
@@ -14,6 +14,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mdickin/yaml.js.git"
+    "url": "git://github.com/pumlhorse/yaml.js.git"
   }
 }
