@@ -242,7 +242,7 @@ Inline = (function() {
     this.settings.objectDecoder = objectDecoder;
   };
 
-  Inline.parse = function(value, exceptionOnInvalidType, objectDecoder) {
+  Inline.parse = function(value, opts, exceptionOnInvalidType, objectDecoder) {
     var context, result;
     if (exceptionOnInvalidType == null) {
       exceptionOnInvalidType = false;
@@ -741,7 +741,7 @@ Parser = (function() {
     this.refs = {};
   }
 
-  Parser.prototype.parse = function(value, exceptionOnInvalidType, objectDecoder) {
+  Parser.prototype.parse = function(value, opts, exceptionOnInvalidType, objectDecoder) {
     var alias, allowOverwrite, block, c, context, data, e, error, error1, error2, first, i, indent, isRef, j, k, key, l, lastKey, len, len1, len2, len3, lineCount, m, matches, mergeNode, n, name, parsed, parsedItem, parser, ref, ref1, ref2, refName, refValue, val, values;
     if (exceptionOnInvalidType == null) {
       exceptionOnInvalidType = false;
@@ -780,7 +780,7 @@ Parser = (function() {
             c = this.getRealCurrentLineNb() + 1;
             parser = new Parser(c);
             parser.refs = this.refs;
-            data.push(parser.parse(this.getNextEmbedBlock(null, true), exceptionOnInvalidType, objectDecoder));
+            data.push(parser.parse(this.getNextEmbedBlock(null, true), opts, exceptionOnInvalidType, objectDecoder));
           } else {
             data.push(null);
           }
@@ -794,9 +794,9 @@ Parser = (function() {
             if (this.isNextLineIndented(false)) {
               block += "\n" + this.getNextEmbedBlock(indent + values.leadspaces.length + 1, true);
             }
-            data.push(parser.parse(block, exceptionOnInvalidType, objectDecoder));
+            data.push(parser.parse(block, opts, exceptionOnInvalidType, objectDecoder));
           } else {
-            data.push(this.parseValue(values.value, exceptionOnInvalidType, objectDecoder));
+            data.push(this.parseValue(values.value, opts, exceptionOnInvalidType, objectDecoder));
           }
         }
       } else if ((values = this.PATTERN_MAPPING_ITEM.exec(this.currentLine)) && values.key.indexOf(' #') === -1) {
@@ -903,13 +903,13 @@ Parser = (function() {
             c = this.getRealCurrentLineNb() + 1;
             parser = new Parser(c);
             parser.refs = this.refs;
-            val = parser.parse(this.getNextEmbedBlock(), exceptionOnInvalidType, objectDecoder);
+            val = parser.parse(this.getNextEmbedBlock(), opts, exceptionOnInvalidType, objectDecoder);
             if (allowOverwrite || data[key] === void 0) {
               data[key] = val;
             }
           }
         } else {
-          val = this.parseValue(values.value, exceptionOnInvalidType, objectDecoder);
+          val = this.parseValue(values.value, opts, exceptionOnInvalidType, objectDecoder);
           if (allowOverwrite || data[key] === void 0) {
             data[key] = val;
           }
@@ -918,7 +918,7 @@ Parser = (function() {
         lineCount = this.lines.length;
         if (1 === lineCount || (2 === lineCount && Utils.isEmpty(this.lines[1]))) {
           try {
-            value = Inline.parse(this.lines[0], exceptionOnInvalidType, objectDecoder);
+            value = Inline.parse(this.lines[0], opts, exceptionOnInvalidType, objectDecoder);
           } catch (error1) {
             e = error1;
             e.parsedLine = this.getRealCurrentLineNb() + 1;
@@ -946,7 +946,7 @@ Parser = (function() {
           return value;
         } else if ((ref2 = Utils.ltrim(value).charAt(0)) === '[' || ref2 === '{') {
           try {
-            return Inline.parse(value, exceptionOnInvalidType, objectDecoder);
+            return Inline.parse(value, opts, exceptionOnInvalidType, objectDecoder);
           } catch (error2) {
             e = error2;
             e.parsedLine = this.getRealCurrentLineNb() + 1;
@@ -1049,7 +1049,7 @@ Parser = (function() {
     this.currentLine = this.lines[--this.currentLineNb];
   };
 
-  Parser.prototype.parseValue = function(value, exceptionOnInvalidType, objectDecoder) {
+  Parser.prototype.parseValue = function(value, opts, exceptionOnInvalidType, objectDecoder) {
     var e, error, foldedIndent, matches, modifiers, pos, ref, ref1, val;
     if (0 === value.indexOf('*')) {
       pos = value.indexOf('#');
@@ -1080,7 +1080,7 @@ Parser = (function() {
     if ((ref1 = value.charAt(0)) === '[' || ref1 === '{' || ref1 === '"' || ref1 === "'") {
       while (true) {
         try {
-          return Inline.parse(value, exceptionOnInvalidType, objectDecoder);
+          return Inline.parse(value, opts, exceptionOnInvalidType, objectDecoder);
         } catch (error) {
           e = error;
           if (e instanceof ParseMore && this.moveToNextLine()) {
@@ -1096,7 +1096,7 @@ Parser = (function() {
       if (this.isNextLineIndented()) {
         value += "\n" + this.getNextEmbedBlock();
       }
-      return Inline.parse(value, exceptionOnInvalidType, objectDecoder);
+      return Inline.parse(value, opts, exceptionOnInvalidType, objectDecoder);
     }
   };
 
@@ -1807,17 +1807,17 @@ Utils = require('./Utils');
 Yaml = (function() {
   function Yaml() {}
 
-  Yaml.parse = function(input, exceptionOnInvalidType, objectDecoder) {
+  Yaml.parse = function(input, opts, exceptionOnInvalidType, objectDecoder) {
     if (exceptionOnInvalidType == null) {
       exceptionOnInvalidType = false;
     }
     if (objectDecoder == null) {
       objectDecoder = null;
     }
-    return new Parser().parse(input, exceptionOnInvalidType, objectDecoder);
+    return new Parser().parse(input, opts, exceptionOnInvalidType, objectDecoder);
   };
 
-  Yaml.parseFile = function(path, callback, exceptionOnInvalidType, objectDecoder) {
+  Yaml.parseFile = function(path, callback, opts, exceptionOnInvalidType, objectDecoder) {
     var input;
     if (callback == null) {
       callback = null;
@@ -1834,7 +1834,7 @@ Yaml = (function() {
           var result;
           result = null;
           if (input != null) {
-            result = _this.parse(input, exceptionOnInvalidType, objectDecoder);
+            result = _this.parse(input, opts, exceptionOnInvalidType, objectDecoder);
           }
           callback(result);
         };
@@ -1842,7 +1842,7 @@ Yaml = (function() {
     } else {
       input = Utils.getStringFromFile(path);
       if (input != null) {
-        return this.parse(input, exceptionOnInvalidType, objectDecoder);
+        return this.parse(input, opts, exceptionOnInvalidType, objectDecoder);
       }
       return null;
     }
@@ -1871,8 +1871,8 @@ Yaml = (function() {
     return this.dump(input, inline, indent, exceptionOnInvalidType, objectEncoder);
   };
 
-  Yaml.load = function(path, callback, exceptionOnInvalidType, objectDecoder) {
-    return this.parseFile(path, callback, exceptionOnInvalidType, objectDecoder);
+  Yaml.load = function(path, callback, opts, exceptionOnInvalidType, objectDecoder) {
+    return this.parseFile(path, callback, opts, exceptionOnInvalidType, objectDecoder);
   };
 
   return Yaml;

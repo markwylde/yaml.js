@@ -25,7 +25,7 @@ class Yaml
     # @throw [ParseException] If the YAML is not valid
     #
     @parse: (input, exceptionOnInvalidType = false, objectDecoder = null) ->
-        return new Parser().parse(input, exceptionOnInvalidType, objectDecoder)
+        return new Parser().parse(input, opts, exceptionOnInvalidType, objectDecoder)
 
 
     # Parses YAML from file path into a JavaScript object.
@@ -51,14 +51,14 @@ class Yaml
             Utils.getStringFromFile path, (input) =>
                 result = null
                 if input?
-                    result = @parse input, exceptionOnInvalidType, objectDecoder
+                    result = @parse input, opts, exceptionOnInvalidType, objectDecoder
                 callback result
                 return
         else
             # Sync
             input = Utils.getStringFromFile path
             if input?
-                return @parse input, exceptionOnInvalidType, objectDecoder
+                return @parse input, opts, exceptionOnInvalidType, objectDecoder
             return null
 
 
@@ -90,8 +90,8 @@ class Yaml
 
     # Alias of parseFile() method for compatibility reasons.
     #
-    @load: (path, callback, exceptionOnInvalidType, objectDecoder) ->
-        return @parseFile path, callback, exceptionOnInvalidType, objectDecoder
+    @load: (path, callback, opts, exceptionOnInvalidType, objectDecoder) ->
+        return @parseFile path, callback, opts, exceptionOnInvalidType, objectDecoder
 
 
 # Expose YAML namespace to browser

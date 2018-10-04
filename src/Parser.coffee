@@ -87,7 +87,7 @@ class Parser
                         c = @getRealCurrentLineNb() + 1
                         parser = new Parser c
                         parser.refs = @refs
-                        data.push parser.parse(@getNextEmbedBlock(null, true), exceptionOnInvalidType, objectDecoder)
+                        data.push parser.parse(@getNextEmbedBlock(null, true), opts, exceptionOnInvalidType, objectDecoder)
                     else
                         data.push null
 
@@ -104,10 +104,10 @@ class Parser
                         if @isNextLineIndented(false)
                             block += "\n"+@getNextEmbedBlock(indent + values.leadspaces.length + 1, true)
 
-                        data.push parser.parse block, exceptionOnInvalidType, objectDecoder
+                        data.push parser.parse block, opts, exceptionOnInvalidType, objectDecoder
 
                     else
-                        data.push @parseValue values.value, exceptionOnInvalidType, objectDecoder
+                        data.push @parseValue values.value, opts, exceptionOnInvalidType, objectDecoder
 
             else if (values = @PATTERN_MAPPING_ITEM.exec @currentLine) and values.key.indexOf(' #') is -1
                 if @CONTEXT_SEQUENCE is context
@@ -208,7 +208,7 @@ class Parser
                         c = @getRealCurrentLineNb() + 1
                         parser = new Parser c
                         parser.refs = @refs
-                        val = parser.parse @getNextEmbedBlock(), exceptionOnInvalidType, objectDecoder
+                        val = parser.parse @getNextEmbedBlock(), opts, exceptionOnInvalidType, objectDecoder
 
                         # Spec: Keys MUST be unique; first one wins.
                         # But overwriting is allowed when a merge node is used in current block.
@@ -216,7 +216,7 @@ class Parser
                             data[key] = val
 
                 else
-                    val = @parseValue values.value, exceptionOnInvalidType, objectDecoder
+                    val = @parseValue values.value, opts, exceptionOnInvalidType, objectDecoder
 
                     # Spec: Keys MUST be unique; first one wins.
                     # But overwriting is allowed when a merge node is used in current block.
@@ -228,7 +228,7 @@ class Parser
                 lineCount = @lines.length
                 if 1 is lineCount or (2 is lineCount and Utils.isEmpty(@lines[1]))
                     try
-                        value = Inline.parse @lines[0], exceptionOnInvalidType, objectDecoder
+                        value = Inline.parse @lines[0], opts, exceptionOnInvalidType, objectDecoder
                     catch e
                         e.parsedLine = @getRealCurrentLineNb() + 1
                         e.snippet = @currentLine
@@ -253,7 +253,7 @@ class Parser
 
                 else if Utils.ltrim(value).charAt(0) in ['[', '{']
                     try
-                        return Inline.parse value, exceptionOnInvalidType, objectDecoder
+                        return Inline.parse value, opts, exceptionOnInvalidType, objectDecoder
                     catch e
                         e.parsedLine = @getRealCurrentLineNb() + 1
                         e.snippet = @currentLine
@@ -389,7 +389,7 @@ class Parser
     #
     # @throw [ParseException] When reference does not exist
     #
-    parseValue: (value, exceptionOnInvalidType, objectDecoder) ->
+    parseValue: (value, opts, exceptionOnInvalidType, objectDecoder) ->
         if 0 is value.indexOf('*')
             pos = value.indexOf '#'
             if pos isnt -1
@@ -420,7 +420,7 @@ class Parser
         if value.charAt(0) in ['[', '{', '"', "'"]
             while true
                 try
-                    return Inline.parse value, exceptionOnInvalidType, objectDecoder
+                    return Inline.parse value, opts, exceptionOnInvalidType, objectDecoder
                 catch e
                     if e instanceof ParseMore and @moveToNextLine()
                         value += "\n" + Utils.trim(@currentLine, ' ')
@@ -431,7 +431,7 @@ class Parser
         else
             if @isNextLineIndented()
                 value += "\n" + @getNextEmbedBlock()
-            return Inline.parse value, exceptionOnInvalidType, objectDecoder
+            return Inline.parse value, opts, exceptionOnInvalidType, objectDecoder
 
         return
 
