@@ -3,11 +3,23 @@
   "version": "0.2.11",
   "description": "Forked version of yamljs to add line numbers",
   "author": "Matt Dickinson <matt@mdickin.com>",
+
   "main": "./lib/Yaml.js",
   "dependencies": {
-    "argparse": "^0.1.15",
-    "glob": "^4.0.0"
+    "argparse": "^1.0.7",
+    "glob": "^7.0.5"
   },
+
+  "devDependencies": {
+    "benchmark": "^2.1.0",
+    "coffeeify": "^2.0.1",
+    "jasmine-node": "^1.14.5"
+  },
+  "bin": {
+    "yaml2json": "./bin/yaml2json",
+    "json2yaml": "./bin/json2yaml"
+  },
+
   "scripts": {
     "test": "cake build; cake test"
   },
