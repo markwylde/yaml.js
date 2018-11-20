@@ -1,5 +1,5 @@
 {
-  "name": "pumlhorse-yamljs",
+  "name": "yamljs",
   "version": "0.2.11",
   "description": "Forked version of yamljs to add line numbers",
   "author": "Matt Dickinson <matt@mdickin.com>",
